@@ -14,6 +14,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using dbnetsoft.Communication.Packets;
+using Google.Apis.Auth.OAuth2;
+using System.IO;
+using Google.Apis.Util.Store;
+using System.Threading;
+using Google.Apis.Sheets.v4;
+using Google.Apis.Services;
+using Google.Apis.Sheets.v4.Data;
 
 namespace TimeNetSync
 {
@@ -82,9 +89,50 @@ namespace TimeNetSync
             });
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void buttonConnect_Click(object sender, RoutedEventArgs e)
         {
             app.Communication.Reconnect();
+        }
+
+        private void buttonDrive_Click(object sender, RoutedEventArgs e)
+        {
+            UserCredential credential;
+
+            using (var stream =
+                new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            {
+                string credPath = System.Environment.GetFolderPath(
+                    System.Environment.SpecialFolder.Personal);
+                credPath = System.IO.Path.Combine(credPath, ".credentials/sheets.googleapis.timenet-sync.json");
+
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(stream).Secrets,
+                    app.Scopes,
+                    "user",
+                    CancellationToken.None,
+                    new FileDataStore(credPath, true)).Result;
+                Console.WriteLine("Credential file saved to: " + credPath);
+            }
+
+            // Create Google Sheets API service.
+            var service = new SheetsService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "Time.NET Sync",
+            });
+
+            // Define request parameters.
+            String spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
+            String range = "Sheet1!A1";
+            ValueRange valueRange = new ValueRange();
+            valueRange.MajorDimension = "COLUMNS";
+
+            var oblist = new List<object>() { "My Cell Text" };
+            valueRange.Values = new List<IList<object>> { oblist };
+
+            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, range);
+            update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
+            UpdateValuesResponse result2 = update.Execute();
         }
     }
 }

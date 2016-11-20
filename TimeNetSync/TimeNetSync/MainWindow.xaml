@@ -7,9 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <Button x:Name="button" Content="Connect" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Width="153" Height="75" Click="button_Click"/>
+        <Button x:Name="buttonConnect" Content="Connect" HorizontalAlignment="Left" Margin="50,0,0,0" VerticalAlignment="Center" Width="153" Height="75" Click="buttonConnect_Click"/>
         <Label x:Name="statusLabel" Content="" Margin="0" VerticalAlignment="Top" Height="81" BorderThickness="0"/>
         <TextBox x:Name="logTextBox" Height="117" Margin="0" TextWrapping="Wrap" VerticalAlignment="Bottom" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        <Button x:Name="buttonDrive" Content="Drive" HorizontalAlignment="Right" Margin="0,0,50,0" VerticalAlignment="Center" Width="153" Height="75" Click="buttonDrive_Click"/>
 
     </Grid>
 </Window>

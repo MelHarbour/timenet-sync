@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Google.Apis.Sheets.v4;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -15,6 +16,7 @@ namespace TimeNetSync
     {
         public dbnetsoft.Communication.Communication Communication { get; set; }
         public dbnetsoft.Communication.CommunicationSettings PortSettings { get; set; }
+        public string[] Scopes = { SheetsService.Scope.Spreadsheets };
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
