@@ -21,6 +21,8 @@ using System.Threading;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4.Data;
+using TimeNet.Packets;
+using TimeNet.Packets.Multisport;
 
 namespace TimeNetSync
 {
@@ -31,6 +33,9 @@ namespace TimeNetSync
     {
         private App app;
         private StringBuilder logContent = new StringBuilder();
+        private List<ResultlistCompetitor> currentResultlist;
+        private SheetsService service;
+        private string spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
 
         public MainWindow()
         {
@@ -38,9 +43,39 @@ namespace TimeNetSync
 
             this.app = Application.Current as App;
 
+            InitializeDrive();
+
             app.Communication.ConnectionStateChanged += new ConnectionStateChangedEventHandler(this.Communication_ConnectionStateChanged);
             app.Communication.ObjectReceived += new ObjectReceivedEventHandler(this.Communication_ObjectReceived);
             app.Communication.BroadcastAdvertisementReceived += new BroadcastAdvertisementReceivedEventHandler(this.Communication_BroadcastAdvertisementReceived);
+        }
+
+        private void InitializeDrive()
+        {
+            UserCredential credential;
+
+            using (var stream =
+                new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            {
+                string credPath = System.Environment.GetFolderPath(
+                    System.Environment.SpecialFolder.Personal);
+                credPath = System.IO.Path.Combine(credPath, ".credentials/sheets.googleapis.timenet-sync.json");
+
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(stream).Secrets,
+                    app.Scopes,
+                    "user",
+                    CancellationToken.None,
+                    new FileDataStore(credPath, true)).Result;
+                Console.WriteLine("Credential file saved to: " + credPath);
+            }
+
+            // Create Google Sheets API service.
+            service = new SheetsService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "Time.NET Sync",
+            });
         }
 
         private void Communication_BroadcastAdvertisementReceived(object sender, BroadcastServerInformation broadcastInformation, string remoteHost, int remotePort)
@@ -55,7 +90,7 @@ namespace TimeNetSync
 
         private void Communication_ObjectReceived(object sender, object obj)
         {
-            //throw new NotImplementedException();
+            this.OnObjectReceived(obj);
         }
 
         private void Communication_ConnectionStateChanged(object sender, enumConnectionState connectionState)
@@ -96,33 +131,6 @@ namespace TimeNetSync
 
         private void buttonDrive_Click(object sender, RoutedEventArgs e)
         {
-            UserCredential credential;
-
-            using (var stream =
-                new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
-            {
-                string credPath = System.Environment.GetFolderPath(
-                    System.Environment.SpecialFolder.Personal);
-                credPath = System.IO.Path.Combine(credPath, ".credentials/sheets.googleapis.timenet-sync.json");
-
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    app.Scopes,
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(credPath, true)).Result;
-                Console.WriteLine("Credential file saved to: " + credPath);
-            }
-
-            // Create Google Sheets API service.
-            var service = new SheetsService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "Time.NET Sync",
-            });
-
-            // Define request parameters.
-            String spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
             String range = "Sheet1!A1";
             ValueRange valueRange = new ValueRange();
             valueRange.MajorDimension = "COLUMNS";
@@ -131,6 +139,30 @@ namespace TimeNetSync
             valueRange.Values = new List<IList<object>> { oblist };
 
             SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, range);
+            update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
+            UpdateValuesResponse result2 = update.Execute();
+        }
+
+        private void OnObjectReceived(object obj)
+        {
+            if (obj is Resultlist)
+            {
+                OnResultlist(obj as Resultlist);
+            }
+        }
+        
+        private void OnResultlist(Resultlist resultlist)
+        {
+            currentResultlist = resultlist.Competitors;
+
+            ValueRange valueRange = new ValueRange();
+
+            var oblist = from c in this.currentResultlist
+                         select new List<object>() { c.Name, c.Time };
+                        
+            valueRange.Values = oblist.ToList<IList<object>>();
+
+            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, "Sheet1!A1");
             update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
             UpdateValuesResponse result2 = update.Execute();
         }
