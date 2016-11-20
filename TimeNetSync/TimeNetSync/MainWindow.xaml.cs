@@ -158,13 +158,24 @@ namespace TimeNetSync
             ValueRange valueRange = new ValueRange();
 
             var oblist = from c in this.currentResultlist
-                         select new List<object>() { c.Name, c.Time };
+                         select new List<object>() { c.Name, ParseTimeString(c.Time) };
                         
             valueRange.Values = oblist.ToList<IList<object>>();
 
             SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, "Sheet1!A1");
             update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
             UpdateValuesResponse result2 = update.Execute();
+        }
+
+        private double ParseTimeString(string time)
+        {
+            TimeSpan result;
+            if (TimeSpan.TryParseExact(time, @"m\:ss\.ff", null, out result))
+                return result.TotalSeconds;
+            else if (TimeSpan.TryParseExact(time, @"s\.ff", null, out result))
+                return result.TotalSeconds;
+            else
+                return 0;
         }
     }
 }
