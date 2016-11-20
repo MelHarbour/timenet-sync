@@ -128,21 +128,7 @@ namespace TimeNetSync
         {
             app.Communication.Reconnect();
         }
-
-        private void buttonDrive_Click(object sender, RoutedEventArgs e)
-        {
-            String range = "Sheet1!A1";
-            ValueRange valueRange = new ValueRange();
-            valueRange.MajorDimension = "COLUMNS";
-
-            var oblist = new List<object>() { "My Cell Text" };
-            valueRange.Values = new List<IList<object>> { oblist };
-
-            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, range);
-            update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
-            UpdateValuesResponse result2 = update.Execute();
-        }
-
+        
         private void OnObjectReceived(object obj)
         {
             if (obj is Resultlist)
