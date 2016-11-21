@@ -33,7 +33,7 @@ namespace TimeNetSync
     {
         private App app;
         private StringBuilder logContent = new StringBuilder();
-        private List<ResultlistCompetitor> currentResultlist;
+        private IEnumerable<Result> currentResults;
         private SheetsService service;
         private string spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
 
@@ -139,29 +139,19 @@ namespace TimeNetSync
         
         private void OnResultlist(Resultlist resultlist)
         {
-            currentResultlist = resultlist.Competitors;
+            currentResults = from c in resultlist.Competitors
+                                select new Result(c);
 
             ValueRange valueRange = new ValueRange();
 
-            var oblist = from c in this.currentResultlist
-                         select new List<object>() { c.Name, ParseTimeString(c.Time) };
+            var oblist = from r in this.currentResults
+                         select new List<object>() { r.Name, r.Time };
                         
             valueRange.Values = oblist.ToList<IList<object>>();
 
             SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, "Sheet1!A1");
             update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
             UpdateValuesResponse result2 = update.Execute();
-        }
-
-        private double ParseTimeString(string time)
-        {
-            TimeSpan result;
-            if (TimeSpan.TryParseExact(time, @"m\:ss\.ff", null, out result))
-                return result.TotalSeconds;
-            else if (TimeSpan.TryParseExact(time, @"s\.ff", null, out result))
-                return result.TotalSeconds;
-            else
-                return 0;
         }
     }
 }
