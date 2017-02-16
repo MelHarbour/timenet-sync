@@ -7,12 +7,16 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="299" Width="497" ItemsSource="{Binding Categories}"
+        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="10,85,0,0" VerticalAlignment="Top" Height="224" Width="497" ItemsSource="{Binding Competitors}"
                   CanUserAddRows="False" AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Pos" Binding="{Binding Pos}" />
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="Bib" Binding="{Binding Bib}" />
+                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
+                <DataGridTextColumn Header="Start Time" Binding="{Binding Path=StartTime.TimeOfDay}" />
+                <DataGridTextColumn Header="Finish Time" Binding="{Binding Path=FinishTime.TimeOfDay}" />
+                <DataGridCheckBoxColumn Header="Confirmed" />
             </DataGrid.Columns>
         </DataGrid>
+        <Button x:Name="button" Content="Reload" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="497" Height="70" Click="button_Click"/>
     </Grid>
 </Window>

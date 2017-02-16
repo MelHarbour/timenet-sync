@@ -28,5 +28,23 @@ namespace TimeNetSync.Model
         public string Info4 { get; set; }
         public string Info5 { get; set; }
         public string InfoResult { get; set; }
+
+        public List<MultisportResult> Results = new List<MultisportResult>();
+
+        public MultisportResult StartTime
+        {
+            get
+            {
+                return Results.FirstOrDefault(x => x.Section == 0);
+            }
+        }
+
+        public MultisportResult FinishTime
+        {
+            get
+            {
+                return Results.FirstOrDefault(x => x.Section == 1);
+            }
+        }
     }
 }

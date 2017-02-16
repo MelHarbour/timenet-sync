@@ -10,7 +10,7 @@ namespace TimeNetSync.Model
     {
         public int Bib { get; set; }
         public int Section { get; set; }
-        public int TimeOfDay { get; set; }
+        public TimeSpan TimeOfDay { get; set; }
         public int State { get; set; }
     }
 }

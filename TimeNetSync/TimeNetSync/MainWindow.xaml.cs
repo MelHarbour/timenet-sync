@@ -36,13 +36,13 @@ namespace TimeNetSync
         private SheetsService service;
         private string spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
         private readonly IUnityContainer _container;
-        public CategoryListViewModel ViewModel { get; set; }
+        public CompetitorListViewModel ViewModel { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
 
-            ViewModel = new CategoryListViewModel();
+            ViewModel = new CompetitorListViewModel();
 
             this.app = Application.Current as App;
 
@@ -53,16 +53,34 @@ namespace TimeNetSync
 
         private void FillViewModel()
         {
+            ViewModel.Competitors.Clear();
+
             SqlCeConnection connection = new SqlCeConnection(@"Data Source=""C:\Users\Public\Documents\Time.Net 2\Competitions\Test.timeNetCompetition""");
             connection.Open();
-            SqlCeCommand command = new SqlCeCommand("SELECT Pos, Name FROM Classes", connection);
+            SqlCeCommand command = new SqlCeCommand("SELECT Bib, FirstName FROM Competitors", connection);
+            SqlCeCommand resultsCommand = new SqlCeCommand("SELECT Section, TimeOfDay, State FROM MultisportResults WHERE Bib = @Bib", connection);
+
             SqlCeDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                Category category = new Category();
-                category.Pos = (int)reader[0];
-                category.Name = (string)reader[1];
-                ViewModel.Categories.Add(category);
+                Competitor competitor = new Competitor();
+                competitor.Bib = (int)reader[0];
+                competitor.FirstName = (string)reader[1];
+
+                resultsCommand.Parameters.Clear();
+                resultsCommand.Parameters.Add(new SqlCeParameter("Bib", competitor.Bib));
+                SqlCeDataReader resultsReader = resultsCommand.ExecuteReader();
+                while (resultsReader.Read())
+                {
+                    MultisportResult result = new MultisportResult();
+                    result.Bib = competitor.Bib;
+                    result.Section = (int)resultsReader[0];
+                    result.TimeOfDay = TimeSpan.FromMilliseconds((int)resultsReader[1]/10);
+                    result.State = (int)resultsReader[2];
+                    competitor.Results.Add(result);
+                }
+
+                ViewModel.Competitors.Add(competitor);
             }
 
         }
@@ -118,5 +136,10 @@ namespace TimeNetSync
             Dispose(true);
         }
         #endregion
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            FillViewModel();
+        }
     }
 }
