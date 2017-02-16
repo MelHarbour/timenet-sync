@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Sheets.v4;
+using Microsoft.Practices.Unity;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -16,9 +17,10 @@ namespace TimeNetSync
     {
         public string[] Scopes = { SheetsService.Scope.Spreadsheets };
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
-            MainWindow wnd = new MainWindow();
+            IUnityContainer container = new UnityContainer();
+            var wnd = new MainWindow();
             // Show the window
             wnd.Show();
         }

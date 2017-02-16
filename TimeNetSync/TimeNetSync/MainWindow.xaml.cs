@@ -19,6 +19,10 @@ using System.Threading;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4.Data;
+using Microsoft.Practices.Unity;
+using TimeNetSync.ViewModel;
+using System.Data.SqlServerCe;
+using TimeNetSync.Model;
 
 namespace TimeNetSync
 {
@@ -31,14 +35,36 @@ namespace TimeNetSync
         private StringBuilder logContent = new StringBuilder();
         private SheetsService service;
         private string spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
+        private readonly IUnityContainer _container;
+        public CategoryListViewModel ViewModel { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
 
+            ViewModel = new CategoryListViewModel();
+
             this.app = Application.Current as App;
 
             InitializeDrive();
+            DataContext = ViewModel;
+            FillViewModel();
+        }
+
+        private void FillViewModel()
+        {
+            SqlCeConnection connection = new SqlCeConnection(@"Data Source=""C:\Users\Public\Documents\Time.Net 2\Competitions\Test.timeNetCompetition""");
+            connection.Open();
+            SqlCeCommand command = new SqlCeCommand("SELECT Pos, Name FROM Classes", connection);
+            SqlCeDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                Category category = new Category();
+                category.Pos = (int)reader[0];
+                category.Name = (string)reader[1];
+                ViewModel.Categories.Add(category);
+            }
+
         }
 
         private void InitializeDrive()
