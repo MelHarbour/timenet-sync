@@ -6,10 +6,5 @@
         xmlns:local="clr-namespace:TimeNetSync"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <Button x:Name="buttonConnect" Content="Connect" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Width="153" Height="75" Click="buttonConnect_Click"/>
-        <Label x:Name="statusLabel" Content="" Margin="0" VerticalAlignment="Top" Height="81" BorderThickness="0"/>
-        <TextBox x:Name="logTextBox" Height="117" Margin="0" TextWrapping="Wrap" VerticalAlignment="Bottom" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-
-    </Grid>
+    <Grid/>
 </Window>

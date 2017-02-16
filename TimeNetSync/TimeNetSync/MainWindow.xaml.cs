@@ -1,5 +1,4 @@
-﻿using dbnetsoft.Communication;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using dbnetsoft.Communication.Packets;
 using Google.Apis.Auth.OAuth2;
 using System.IO;
 using Google.Apis.Util.Store;
@@ -21,8 +19,6 @@ using System.Threading;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4.Data;
-using TimeNet.Packets;
-using TimeNet.Packets.Multisport;
 
 namespace TimeNetSync
 {
@@ -33,7 +29,6 @@ namespace TimeNetSync
     {
         private App app;
         private StringBuilder logContent = new StringBuilder();
-        private IEnumerable<Result> currentResults;
         private SheetsService service;
         private string spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
 
@@ -44,10 +39,6 @@ namespace TimeNetSync
             this.app = Application.Current as App;
 
             InitializeDrive();
-
-            app.Communication.ConnectionStateChanged += new ConnectionStateChangedEventHandler(this.Communication_ConnectionStateChanged);
-            app.Communication.ObjectReceived += new ObjectReceivedEventHandler(this.Communication_ObjectReceived);
-            app.Communication.BroadcastAdvertisementReceived += new BroadcastAdvertisementReceivedEventHandler(this.Communication_BroadcastAdvertisementReceived);
         }
 
         private void InitializeDrive()
@@ -76,82 +67,6 @@ namespace TimeNetSync
                 HttpClientInitializer = credential,
                 ApplicationName = "Time.NET Sync",
             });
-        }
-
-        private void Communication_BroadcastAdvertisementReceived(object sender, BroadcastServerInformation broadcastInformation, string remoteHost, int remotePort)
-        {
-            object[] objArray1 = new object[] { DateTime.Now.ToLongTimeString(), ": Advertisement from Time.NET server received: ", remoteHost, ":", remotePort };
-            logContent.AppendLine(string.Concat(objArray1));
-            this.Dispatcher.Invoke(() =>
-            {
-                this.logTextBox.Text = logContent.ToString();
-            });
-        }
-
-        private void Communication_ObjectReceived(object sender, object obj)
-        {
-            this.OnObjectReceived(obj);
-        }
-
-        private void Communication_ConnectionStateChanged(object sender, enumConnectionState connectionState)
-        {
-            switch (connectionState)
-            {
-                case enumConnectionState.Connected:
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        this.statusLabel.Background = new SolidColorBrush(Colors.LightGreen);
-                    });
-                    break;
-
-                case enumConnectionState.Connecting:
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        this.statusLabel.Background = new SolidColorBrush(Colors.Yellow);
-                    });
-                    break;
-
-                case enumConnectionState.Disconnected:
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        this.statusLabel.Background = new SolidColorBrush(Colors.Salmon);
-                    });
-                    break;
-            }
-            this.Dispatcher.Invoke(() =>
-            {
-                this.statusLabel.Content = app.Communication.ToString();
-            });
-        }
-
-        private void buttonConnect_Click(object sender, RoutedEventArgs e)
-        {
-            app.Communication.Reconnect();
-        }
-        
-        private void OnObjectReceived(object obj)
-        {
-            if (obj is Resultlist)
-            {
-                OnResultlist(obj as Resultlist);
-            }
-        }
-        
-        private void OnResultlist(Resultlist resultlist)
-        {
-            currentResults = from c in resultlist.Competitors
-                                select new Result(c);
-
-            ValueRange valueRange = new ValueRange();
-
-            var oblist = from r in this.currentResults
-                         select new List<object>() { r.Name, r.Time };
-                        
-            valueRange.Values = oblist.ToList<IList<object>>();
-
-            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, "Sheet1!A1");
-            update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
-            UpdateValuesResponse result2 = update.Execute();
         }
 
         #region IDisposable Support
