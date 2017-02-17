@@ -35,7 +35,7 @@ namespace TimeNetSync
         private App app;
         private StringBuilder logContent = new StringBuilder();
         private SheetsService service;
-        private string spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
+        private string spreadsheetId = Properties.Settings.Default.SpreadsheetId;
         public CompetitorListViewModel ViewModel { get; set; }
         private DispatcherTimer timer = new DispatcherTimer();
 
@@ -61,7 +61,7 @@ namespace TimeNetSync
 
         private void FillViewModel()
         {
-            using (SqlCeConnection connection = new SqlCeConnection(@"Data Source=""C:\Users\Public\Documents\Time.Net 2\Competitions\Test.timeNetCompetition"""))
+            using (SqlCeConnection connection = new SqlCeConnection(String.Concat(@"Data Source=""", Properties.Settings.Default.TimeNetFileLocation, @"""")))
             {
                 connection.Open();
                 SqlCeCommand command = new SqlCeCommand("SELECT Id, Bib, FirstName FROM Competitors", connection);
@@ -165,7 +165,7 @@ namespace TimeNetSync
 
             valueRange.Values = objlist.ToList<IList<object>>();
 
-            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, "Sheet1!A1");
+            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, Properties.Settings.Default.RangeTarget);
             update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
             UpdateValuesResponse result2 = update.Execute();
         }

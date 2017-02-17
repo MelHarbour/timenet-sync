@@ -1,7 +1,18 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TimeNetSync.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="SpreadsheetId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4</Value>
+    </Setting>
+    <Setting Name="TimeNetFileLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Users\Public\Documents\Time.Net 2\Competitions\Test.timeNetCompetition</Value>
+    </Setting>
+    <Setting Name="RangeTarget" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Sheet1!A1</Value>
+    </Setting>
+    <Setting Name="Setting" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
 </SettingsFile>
