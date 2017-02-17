@@ -8,6 +8,7 @@ namespace TimeNetSync.Model
 {
     public class Competitor
     {
+        public int Id { get; set; }
         public int Bib { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

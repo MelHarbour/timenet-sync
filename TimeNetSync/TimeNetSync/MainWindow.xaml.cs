@@ -23,6 +23,7 @@ using Microsoft.Practices.Unity;
 using TimeNetSync.ViewModel;
 using System.Data.SqlServerCe;
 using TimeNetSync.Model;
+using System.Windows.Threading;
 
 namespace TimeNetSync
 {
@@ -37,6 +38,7 @@ namespace TimeNetSync
         private string spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
         private readonly IUnityContainer _container;
         public CompetitorListViewModel ViewModel { get; set; }
+        private DispatcherTimer timer = new DispatcherTimer();
 
         public MainWindow()
         {
@@ -48,6 +50,13 @@ namespace TimeNetSync
 
             InitializeDrive();
             DataContext = ViewModel;
+            timer.Tick += new EventHandler(Timer_Tick);
+            timer.Interval = new TimeSpan(0, 0, 5);
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
             FillViewModel();
         }
 
@@ -76,7 +85,7 @@ namespace TimeNetSync
                     result.Bib = competitor.Bib;
                     result.Section = (int)resultsReader[0];
                     result.TimeOfDay = TimeSpan.FromMilliseconds((int)resultsReader[1]/10);
-                    result.State = (int)resultsReader[2];
+                    result.State = (ResultState)(int)resultsReader[2];
                     competitor.Results.Add(result);
                 }
 
@@ -136,10 +145,5 @@ namespace TimeNetSync
             Dispose(true);
         }
         #endregion
-
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-            FillViewModel();
-        }
     }
 }

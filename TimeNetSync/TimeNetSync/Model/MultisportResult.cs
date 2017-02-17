@@ -8,9 +8,11 @@ namespace TimeNetSync.Model
 {
     public class MultisportResult
     {
+        public int Id { get; set; }
         public int Bib { get; set; }
         public int Section { get; set; }
         public TimeSpan TimeOfDay { get; set; }
-        public int State { get; set; }
+        public ResultState State { get; set; }
+        public bool Confirmed { get; set; }
     }
 }
