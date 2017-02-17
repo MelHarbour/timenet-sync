@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using TimeNetSync.ViewModel;
 
 namespace TimeNetSync.Model
 {
-    public class Competitor
+    public class Competitor : INotifyPropertyChanged
     {
         public int Id { get; set; }
         public int Bib { get; set; }
@@ -30,7 +33,22 @@ namespace TimeNetSync.Model
         public string Info5 { get; set; }
         public string InfoResult { get; set; }
 
-        public List<MultisportResult> Results = new List<MultisportResult>();
+        public PropertyObservableCollection<MultisportResult> Results = new PropertyObservableCollection<MultisportResult>();
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public MultisportResult StartTime
         {

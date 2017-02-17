@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -12,9 +13,9 @@ namespace TimeNetSync.ViewModel
 {
     public class CompetitorListViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<Competitor> competitors = new ObservableCollection<Competitor>();
+        private PropertyObservableCollection<Competitor> competitors = new PropertyObservableCollection<Competitor>();
 
-        public ObservableCollection<Competitor> Competitors
+        public PropertyObservableCollection<Competitor> Competitors
         {
             get { return competitors; }
             set { competitors = value; }

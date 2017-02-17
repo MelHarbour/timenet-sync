@@ -132,6 +132,7 @@
     </ApplicationDefinition>
     <Compile Include="Model\ResultState.cs" />
     <Compile Include="ViewModel\CompetitorListViewModel.cs" />
+    <Compile Include="ViewModel\PropertyObservableCollection.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

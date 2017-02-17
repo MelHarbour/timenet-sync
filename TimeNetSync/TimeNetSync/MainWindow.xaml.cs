@@ -36,7 +36,6 @@ namespace TimeNetSync
         private StringBuilder logContent = new StringBuilder();
         private SheetsService service;
         private string spreadsheetId = "1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4";
-        private readonly IUnityContainer _container;
         public CompetitorListViewModel ViewModel { get; set; }
         private DispatcherTimer timer = new DispatcherTimer();
 
@@ -62,36 +61,47 @@ namespace TimeNetSync
 
         private void FillViewModel()
         {
-            ViewModel.Competitors.Clear();
-
-            SqlCeConnection connection = new SqlCeConnection(@"Data Source=""C:\Users\Public\Documents\Time.Net 2\Competitions\Test.timeNetCompetition""");
-            connection.Open();
-            SqlCeCommand command = new SqlCeCommand("SELECT Bib, FirstName FROM Competitors", connection);
-            SqlCeCommand resultsCommand = new SqlCeCommand("SELECT Section, TimeOfDay, State FROM MultisportResults WHERE Bib = @Bib", connection);
-
-            SqlCeDataReader reader = command.ExecuteReader();
-            while (reader.Read())
+            using (SqlCeConnection connection = new SqlCeConnection(@"Data Source=""C:\Users\Public\Documents\Time.Net 2\Competitions\Test.timeNetCompetition"""))
             {
-                Competitor competitor = new Competitor();
-                competitor.Bib = (int)reader[0];
-                competitor.FirstName = (string)reader[1];
+                connection.Open();
+                SqlCeCommand command = new SqlCeCommand("SELECT Id, Bib, FirstName FROM Competitors", connection);
+                SqlCeCommand resultsCommand = new SqlCeCommand("SELECT Id, Section, TimeOfDay, State FROM MultisportResults WHERE Bib = @Bib", connection);
 
-                resultsCommand.Parameters.Clear();
-                resultsCommand.Parameters.Add(new SqlCeParameter("Bib", competitor.Bib));
-                SqlCeDataReader resultsReader = resultsCommand.ExecuteReader();
-                while (resultsReader.Read())
+                SqlCeDataReader reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    MultisportResult result = new MultisportResult();
-                    result.Bib = competitor.Bib;
-                    result.Section = (int)resultsReader[0];
-                    result.TimeOfDay = TimeSpan.FromMilliseconds((int)resultsReader[1]/10);
-                    result.State = (ResultState)(int)resultsReader[2];
-                    competitor.Results.Add(result);
+                    int id = (int)reader[0];
+                    Competitor competitor = ViewModel.Competitors.FirstOrDefault(x => x.Id == id);
+                    if (competitor == null)
+                    {
+                        competitor = new Competitor();
+                        competitor.Id = (int)reader[0];
+                        ViewModel.Competitors.Add(competitor);
+                    }
+
+                    competitor.Bib = (int)reader[1];
+                    competitor.FirstName = (string)reader[2];
+
+                    resultsCommand.Parameters.Clear();
+                    resultsCommand.Parameters.Add(new SqlCeParameter("Bib", competitor.Bib));
+                    SqlCeDataReader resultsReader = resultsCommand.ExecuteReader();
+                    while (resultsReader.Read())
+                    {
+                        int resultsId = (int)resultsReader[0];
+                        MultisportResult result = competitor.Results.FirstOrDefault(x => x.Id == resultsId);
+                        if (result == null)
+                        {
+                            result = new MultisportResult();
+                            result.Id = resultsId;
+                            competitor.Results.Add(result);
+                        }
+                        result.Bib = competitor.Bib;
+                        result.Section = (int)resultsReader[1];
+                        result.TimeOfDay = TimeSpan.FromMilliseconds((int)resultsReader[2] / 10);
+                        result.State = (ResultState)(int)resultsReader[3];
+                    }
                 }
-
-                ViewModel.Competitors.Add(competitor);
             }
-
         }
 
         private void InitializeDrive()
