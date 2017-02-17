@@ -33,7 +33,6 @@ namespace TimeNetSync
     public partial class MainWindow : Window, IDisposable
     {
         private App app;
-        private StringBuilder logContent = new StringBuilder();
         private SheetsService service;
         private string spreadsheetId = Properties.Settings.Default.SpreadsheetId;
         public CompetitorListViewModel ViewModel { get; set; }
