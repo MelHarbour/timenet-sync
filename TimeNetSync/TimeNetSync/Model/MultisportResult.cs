@@ -15,7 +15,6 @@ namespace TimeNetSync.Model
         private int section;
         private TimeSpan timeOfDay;
         private ResultState state;
-        private bool confirmed;
 
         public int Id
         {
@@ -45,12 +44,6 @@ namespace TimeNetSync.Model
         {
             get { return state; }
             set { SetField(ref state, value); }
-        }
-
-        public bool Confirmed
-        {
-            get { return confirmed; }
-            set { SetField(ref confirmed, value); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

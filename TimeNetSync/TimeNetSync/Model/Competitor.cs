@@ -32,6 +32,7 @@ namespace TimeNetSync.Model
         public string Info4 { get; set; }
         public string Info5 { get; set; }
         public string InfoResult { get; set; }
+        public bool Confirmed { get; set; }
 
         public PropertyObservableCollection<MultisportResult> Results = new PropertyObservableCollection<MultisportResult>();
 
@@ -63,6 +64,17 @@ namespace TimeNetSync.Model
             get
             {
                 return Results.FirstOrDefault(x => x.Section == 1);
+            }
+        }
+
+        public TimeSpan RunTime
+        {
+            get
+            {
+                if (StartTime != null && FinishTime != null)
+                    return FinishTime.TimeOfDay - StartTime.TimeOfDay;
+                else
+                    return new TimeSpan(0, 0, 0);
             }
         }
     }
