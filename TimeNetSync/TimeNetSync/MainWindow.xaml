@@ -18,5 +18,6 @@
                 <DataGridCheckBoxColumn Header="Confirmed" Binding="{Binding Confirmed}" />
             </DataGrid.Columns>
         </DataGrid>
+        <Button x:Name="button" Content="Send to Google" HorizontalAlignment="Left" Margin="288,10,0,0" VerticalAlignment="Top" Width="219" Height="73" Click="button_Click"/>
     </Grid>
 </Window>

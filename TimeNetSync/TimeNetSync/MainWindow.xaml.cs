@@ -155,5 +155,19 @@ namespace TimeNetSync
             Dispose(true);
         }
         #endregion
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            ValueRange valueRange = new ValueRange();
+            var objlist = from c in this.ViewModel.Competitors
+                          orderby c.RunTime
+                          select new List<object>() { c.Bib, c.FirstName, c.RunTime };
+
+            valueRange.Values = objlist.ToList<IList<object>>();
+
+            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, "Sheet1!A1");
+            update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
+            UpdateValuesResponse result2 = update.Execute();
+        }
     }
 }
