@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimeNetSync"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800">
+        Title="Time.NET Sync" Height="500" Width="800">
     <Window.Resources>
         <local:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
