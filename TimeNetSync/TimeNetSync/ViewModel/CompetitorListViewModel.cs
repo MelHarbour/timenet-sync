@@ -13,7 +13,28 @@ namespace TimeNetSync.ViewModel
 {
     public class CompetitorListViewModel : INotifyPropertyChanged
     {
+        private string filePath;
+        private string spreadsheetId;
+        private string rangeTarget;
         private PropertyObservableCollection<Competitor> competitors = new PropertyObservableCollection<Competitor>();
+
+        public string FilePath
+        {
+            get { return filePath; }
+            set { SetField(ref filePath, value); }
+        }
+
+        public string SpreadsheetId
+        {
+            get { return spreadsheetId; }
+            set { SetField(ref spreadsheetId, value); }
+        }
+
+        public string RangeTarget
+        {
+            get { return rangeTarget; }
+            set { SetField(ref rangeTarget, value); }
+        }
 
         public PropertyObservableCollection<Competitor> Competitors
         {

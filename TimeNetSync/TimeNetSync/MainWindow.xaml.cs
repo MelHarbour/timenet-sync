@@ -34,7 +34,6 @@ namespace TimeNetSync
     {
         private App app;
         private SheetsService service;
-        private string spreadsheetId = Properties.Settings.Default.SpreadsheetId;
         public CompetitorListViewModel ViewModel { get; set; }
         private DispatcherTimer timer = new DispatcherTimer();
 
@@ -43,6 +42,9 @@ namespace TimeNetSync
             InitializeComponent();
 
             ViewModel = new CompetitorListViewModel();
+            ViewModel.FilePath = Properties.Settings.Default.TimeNetFileLocation;
+            ViewModel.SpreadsheetId = Properties.Settings.Default.SpreadsheetId;
+            ViewModel.RangeTarget = Properties.Settings.Default.RangeTarget;
 
             this.app = Application.Current as App;
 
@@ -60,7 +62,7 @@ namespace TimeNetSync
 
         private void FillViewModel()
         {
-            using (SqlCeConnection connection = new SqlCeConnection(String.Concat(@"Data Source=""", Properties.Settings.Default.TimeNetFileLocation, @"""")))
+            using (SqlCeConnection connection = new SqlCeConnection(String.Concat(@"Data Source=""", ViewModel.FilePath, @"""")))
             {
                 connection.Open();
                 SqlCeCommand command = new SqlCeCommand("SELECT Id, Bib, FirstName FROM Competitors", connection);
@@ -110,8 +112,8 @@ namespace TimeNetSync
             using (var stream =
                 new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
             {
-                string credPath = System.Environment.GetFolderPath(
-                    System.Environment.SpecialFolder.Personal);
+                string credPath = Environment.GetFolderPath(
+                    Environment.SpecialFolder.Personal);
                 credPath = System.IO.Path.Combine(credPath, ".credentials/sheets.googleapis.timenet-sync.json");
 
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
@@ -158,13 +160,13 @@ namespace TimeNetSync
         private void button_Click(object sender, RoutedEventArgs e)
         {
             ValueRange valueRange = new ValueRange();
-            var objlist = from c in this.ViewModel.Competitors
+            var objlist = from c in ViewModel.Competitors
                           orderby c.RunTime
                           select new List<object>() { c.Bib, c.FirstName, c.RunTime };
 
             valueRange.Values = objlist.ToList<IList<object>>();
 
-            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, spreadsheetId, Properties.Settings.Default.RangeTarget);
+            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, ViewModel.SpreadsheetId, ViewModel.RangeTarget);
             update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
             UpdateValuesResponse result2 = update.Execute();
         }
