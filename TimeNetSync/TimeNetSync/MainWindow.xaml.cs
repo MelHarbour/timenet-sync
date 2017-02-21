@@ -158,6 +158,14 @@ namespace TimeNetSync
         }
         #endregion
 
+        private void saveConfig(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.TimeNetFileLocation = ViewModel.FilePath;
+            Properties.Settings.Default.SpreadsheetId = ViewModel.SpreadsheetId;
+            Properties.Settings.Default.RangeTarget = ViewModel.RangeTarget;
+            Properties.Settings.Default.Save();
+        }
+
         private void button_Click(object sender, RoutedEventArgs e)
         {
             ValueRange valueRange = new ValueRange();
