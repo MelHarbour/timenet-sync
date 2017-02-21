@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:TimeNetSync"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="800">
+    <Window.Resources>
+        <local:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </Window.Resources>
     <Grid>
         <DataGrid x:Name="dataGrid" Margin="270,10,10,10" ItemsSource="{Binding Competitors}"
                   CanUserAddRows="False" AutoGenerateColumns="False">
@@ -19,13 +22,15 @@
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel HorizontalAlignment="Left" Margin="10,10,10,10" Width="250">
-            <Button x:Name="button" Content="Send to Google" HorizontalAlignment="Left" VerticalAlignment="Top" Width="88" Height="73" Click="button_Click"/>
-            <Label x:Name="filePathLabel" Content="Time.NET File" Margin="0,10,0,0"/>
-            <TextBox x:Name="filePathTextBox" Height="23" TextWrapping="Wrap" Text="{Binding FilePath}"/>
+            
+            <Label x:Name="filePathLabel" Content="Time.NET File" />
+            <TextBox x:Name="filePathTextBox" Height="50" TextWrapping="Wrap" Text="{Binding FilePath}" IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource InverseBooleanConverter}}"/>
             <Label x:Name="spreadsheetIdLabel" Content="Spreadsheet ID" Margin="0,10,0,0" />
-            <TextBox x:Name="spreadsheetIdTextBox" Height="23" TextWrapping="Wrap" Text="{Binding SpreadsheetId}"/>
+            <TextBox x:Name="spreadsheetIdTextBox" Height="50" TextWrapping="Wrap" Text="{Binding SpreadsheetId}" IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource InverseBooleanConverter}}"/>
             <Label x:Name="rangeTargetLabel" Content="Range Target" Margin="0,10,0,0" />
-            <TextBox x:Name="rangeTargetTextBox" Height="23" TextWrapping="Wrap" Text="{Binding RangeTarget}"/>
+            <TextBox x:Name="rangeTargetTextBox" Height="23" TextWrapping="Wrap" Text="{Binding RangeTarget}" IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource InverseBooleanConverter}}"/>
+            <Button x:Name="connectingBtn" Content="Toggle Connecting" Height="53" Margin="0,10,0,0" Command="{Binding ToggleConnectingCommand}"/>
+            <Button x:Name="googleBtn" Content="Send to Google" Height="53" Click="button_Click" Margin="0,10,0,0"/>
         </StackPanel>
     </Grid>
 </Window>

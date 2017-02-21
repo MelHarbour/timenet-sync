@@ -57,7 +57,8 @@ namespace TimeNetSync
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            FillViewModel();
+            if (ViewModel.IsConnecting)
+                FillViewModel();
         }
 
         private void FillViewModel()
