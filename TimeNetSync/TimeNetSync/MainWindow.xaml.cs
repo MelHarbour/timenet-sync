@@ -42,9 +42,6 @@ namespace TimeNetSync
             InitializeComponent();
 
             ViewModel = new CompetitorListViewModel();
-            ViewModel.FilePath = Properties.Settings.Default.TimeNetFileLocation;
-            ViewModel.SpreadsheetId = Properties.Settings.Default.SpreadsheetId;
-            ViewModel.RangeTarget = Properties.Settings.Default.RangeTarget;
 
             this.app = Application.Current as App;
 
@@ -158,18 +155,11 @@ namespace TimeNetSync
         }
         #endregion
 
-        private void saveConfig(object sender, RoutedEventArgs e)
-        {
-            Properties.Settings.Default.TimeNetFileLocation = ViewModel.FilePath;
-            Properties.Settings.Default.SpreadsheetId = ViewModel.SpreadsheetId;
-            Properties.Settings.Default.RangeTarget = ViewModel.RangeTarget;
-            Properties.Settings.Default.Save();
-        }
-
         private void button_Click(object sender, RoutedEventArgs e)
         {
             ValueRange valueRange = new ValueRange();
             var objlist = from c in ViewModel.Competitors
+                          where c.Confirmed
                           orderby c.RunTime
                           select new List<object>() { c.Bib, c.FirstName, c.RunTime };
 

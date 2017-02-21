@@ -31,7 +31,7 @@
             <TextBox x:Name="rangeTargetTextBox" Height="23" TextWrapping="Wrap" Text="{Binding RangeTarget}" IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource InverseBooleanConverter}}"/>
             <Button x:Name="connectingBtn" Content="Toggle Connecting" Height="55" Margin="0,10,0,0" Command="{Binding ToggleConnectingCommand}"/>
             <Button x:Name="googleBtn" Content="Send to Google" Height="55" Click="button_Click" Margin="0,10,0,0"/>
-            <Button x:Name="saveConfigBtn" Content="Save Config" Height="55" Margin="0,10,0,0" Click="saveConfig"/>
+            <Button x:Name="saveConfigBtn" Content="Save Config" Height="55" Margin="0,10,0,0" Command="{Binding SaveSettingsCommand}"/>
         </StackPanel>
     </Grid>
 </Window>

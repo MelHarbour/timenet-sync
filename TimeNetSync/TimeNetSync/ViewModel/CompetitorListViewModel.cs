@@ -18,6 +18,7 @@ namespace TimeNetSync.ViewModel
         private string rangeTarget;
         private bool isConnecting = true;
         private RelayCommand toggleConnectingCommand;
+        private RelayCommand saveSettingsCommand;
         private PropertyObservableCollection<Competitor> competitors = new PropertyObservableCollection<Competitor>();
 
         public string FilePath
@@ -54,6 +55,16 @@ namespace TimeNetSync.ViewModel
             }
         }
 
+        public RelayCommand SaveSettingsCommand
+        {
+            get
+            {
+                if (saveSettingsCommand == null)
+                    saveSettingsCommand = new RelayCommand(param => SaveSettings(), param => true);
+                return saveSettingsCommand;
+            }
+        }
+
         public PropertyObservableCollection<Competitor> Competitors
         {
             get { return competitors; }
@@ -62,12 +73,22 @@ namespace TimeNetSync.ViewModel
 
         public CompetitorListViewModel()
         {
-
+            FilePath = Properties.Settings.Default.TimeNetFileLocation;
+            SpreadsheetId = Properties.Settings.Default.SpreadsheetId;
+            RangeTarget = Properties.Settings.Default.RangeTarget;
         }
 
         private void ToggleConnect()
         {
             IsConnecting = !IsConnecting;
+        }
+
+        private void SaveSettings()
+        {
+            Properties.Settings.Default.TimeNetFileLocation = FilePath;
+            Properties.Settings.Default.SpreadsheetId = SpreadsheetId;
+            Properties.Settings.Default.RangeTarget = RangeTarget;
+            Properties.Settings.Default.Save();
         }
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
