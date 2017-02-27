@@ -63,7 +63,7 @@ namespace TimeNetSync
             using (SqlCeConnection connection = new SqlCeConnection(String.Concat(@"Data Source=""", ViewModel.FilePath, @"""")))
             {
                 connection.Open();
-                SqlCeCommand command = new SqlCeCommand("SELECT Id, Bib, FirstName FROM Competitors", connection);
+                SqlCeCommand command = new SqlCeCommand("SELECT Id, Bib, LastName FROM Competitors", connection);
                 SqlCeCommand resultsCommand = new SqlCeCommand("SELECT Id, Section, TimeOfDay, State FROM MultisportResults WHERE Bib = @Bib", connection);
 
                 SqlCeDataReader reader = command.ExecuteReader();
@@ -79,7 +79,7 @@ namespace TimeNetSync
                     }
 
                     competitor.Bib = (int)reader[1];
-                    competitor.FirstName = (string)reader[2];
+                    competitor.LastName = (string)reader[2];
 
                     resultsCommand.Parameters.Clear();
                     resultsCommand.Parameters.Add(new SqlCeParameter("Bib", competitor.Bib));
@@ -161,7 +161,7 @@ namespace TimeNetSync
             var objlist = from c in ViewModel.Competitors
                           where c.Confirmed
                           orderby c.RunTime
-                          select new List<object>() { c.Bib, c.FirstName, c.RunTime };
+                          select new List<object>() { c.Bib, c.LastName, c.RunTime };
 
             valueRange.Values = objlist.ToList<IList<object>>();
 
