@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using TimeNetSync.Services;
 
 namespace TimeNetSync
 {
@@ -20,7 +21,8 @@ namespace TimeNetSync
         protected override void OnStartup(StartupEventArgs e)
         {
             IUnityContainer container = new UnityContainer();
-            var wnd = new MainWindow();
+            container.RegisterType<IResultsOutput, GoogleSheetResultsOutput>();
+            var wnd = container.Resolve<MainWindow>();
             // Show the window
             wnd.Show();
         }

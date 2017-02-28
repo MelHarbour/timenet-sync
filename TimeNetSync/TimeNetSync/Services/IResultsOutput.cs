@@ -8,5 +8,6 @@ namespace TimeNetSync.Services
 {
     public interface IResultsOutput
     {
+        void Update(string target, string targetRange, IList<IList<object>> values);
     }
 }

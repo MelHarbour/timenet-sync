@@ -13,8 +13,8 @@
         <DataGrid x:Name="dataGrid" Margin="270,10,10,10" ItemsSource="{Binding Competitors}"
                   CanUserAddRows="False" AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Bib" Binding="{Binding Bib}" />
-                <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" />
+                <DataGridTextColumn Header="Start Number" Binding="{Binding Bib}" />
+                <DataGridTextColumn Header="Crew Name" Binding="{Binding FirstName}" />
                 <DataGridTextColumn Header="Start Time" Binding="{Binding Path=StartTime.TimeOfDay}" />
                 <DataGridTextColumn Header="Finish Time" Binding="{Binding Path=FinishTime.TimeOfDay}" />
                 <DataGridTextColumn Header="Run Time" Binding="{Binding Path=RunTime}" />
