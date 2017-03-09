@@ -90,5 +90,13 @@ namespace TimeNetSync.Model
                     return new TimeSpan(0, 0, 0);
             }
         }
+
+        public ResultState State
+        {
+            get
+            {
+                return Results.FirstOrDefault(x => x.Section == 1).State;
+            }
+        }
     }
 }
