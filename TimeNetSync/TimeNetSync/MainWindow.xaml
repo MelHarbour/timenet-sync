@@ -14,7 +14,7 @@
                   CanUserAddRows="False" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Start Number" Binding="{Binding Bib}" />
-                <DataGridTextColumn Header="Crew Name" Binding="{Binding FirstName}" />
+                <DataGridTextColumn Header="Crew Name" Binding="{Binding LastName}" />
                 <DataGridTextColumn Header="Start Time" Binding="{Binding Path=StartTime.TimeOfDay}" />
                 <DataGridTextColumn Header="Finish Time" Binding="{Binding Path=FinishTime.TimeOfDay}" />
                 <DataGridTextColumn Header="Run Time" Binding="{Binding Path=RunTime}" />
