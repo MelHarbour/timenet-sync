@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -34,7 +35,17 @@ namespace TimeNetSync.Model
         public string InfoResult { get; set; }
         public bool Confirmed { get; set; }
 
+        public Competitor()
+        {
+            Results.CollectionChanged += HandleResultsChange;
+        }
+
         public PropertyObservableCollection<MultisportResult> Results = new PropertyObservableCollection<MultisportResult>();
+
+        private void HandleResultsChange(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged("Results");
+        }
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

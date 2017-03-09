@@ -41,10 +41,12 @@ namespace TimeNetSync.ViewModel
                 }
             }
         }
+
+        public event PropertyChangedEventHandler CollectionItemChanged;
+
         private void ItemPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, sender, sender, IndexOf((T)sender));
-            OnCollectionChanged(args);
+            this.CollectionItemChanged?.Invoke(sender, e);
         }
     }
 }
