@@ -44,7 +44,9 @@ namespace TimeNetSync.Model
 
         private void HandleResultsChange(object sender, NotifyCollectionChangedEventArgs e)
         {
-            OnPropertyChanged("Results");
+            OnPropertyChanged("StartTime");
+            OnPropertyChanged("FinishTime");
+            OnPropertyChanged("RunTime");
         }
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
