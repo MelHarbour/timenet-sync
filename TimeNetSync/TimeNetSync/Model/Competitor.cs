@@ -95,7 +95,11 @@ namespace TimeNetSync.Model
         {
             get
             {
-                return Results.FirstOrDefault(x => x.Section == 1).State;
+                MultisportResult result = Results.FirstOrDefault(x => x.Section == 1);
+                if (result != null)
+                    return result.State;
+                else
+                    return ResultState.Ok;
             }
         }
     }

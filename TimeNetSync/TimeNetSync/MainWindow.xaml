@@ -18,6 +18,7 @@
                 <DataGridTextColumn Header="Start Time" Binding="{Binding Path=StartTime.TimeOfDay}" />
                 <DataGridTextColumn Header="Finish Time" Binding="{Binding Path=FinishTime.TimeOfDay}" />
                 <DataGridTextColumn Header="Run Time" Binding="{Binding Path=RunTime}" />
+                <DataGridTextColumn Header="State" Binding="{Binding State}"/>
                 <DataGridCheckBoxColumn Header="Confirmed" Binding="{Binding Confirmed}" />
             </DataGrid.Columns>
         </DataGrid>
