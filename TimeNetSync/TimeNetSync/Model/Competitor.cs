@@ -37,12 +37,12 @@ namespace TimeNetSync.Model
 
         public Competitor()
         {
-            Results.CollectionChanged += HandleResultsChange;
+            Results.ListChanged += HandleResultsChange;
         }
 
-        public PropertyObservableCollection<MultisportResult> Results = new PropertyObservableCollection<MultisportResult>();
+        public BindingList<MultisportResult> Results = new BindingList<MultisportResult>();
 
-        private void HandleResultsChange(object sender, NotifyCollectionChangedEventArgs e)
+        private void HandleResultsChange(object sender, ListChangedEventArgs e)
         {
             OnPropertyChanged("StartTime");
             OnPropertyChanged("FinishTime");

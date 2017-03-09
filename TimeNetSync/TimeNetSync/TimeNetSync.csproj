@@ -137,7 +137,6 @@
     <Compile Include="Services\IFileService.cs" />
     <Compile Include="Services\IResultsOutput.cs" />
     <Compile Include="ViewModel\CompetitorListViewModel.cs" />
-    <Compile Include="ViewModel\PropertyObservableCollection.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

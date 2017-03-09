@@ -19,7 +19,7 @@ namespace TimeNetSync.ViewModel
         private bool isConnecting = true;
         private RelayCommand toggleConnectingCommand;
         private RelayCommand saveSettingsCommand;
-        private PropertyObservableCollection<Competitor> competitors = new PropertyObservableCollection<Competitor>();
+        private BindingList<Competitor> competitors = new BindingList<Competitor>();
 
         public string FilePath
         {
@@ -65,7 +65,7 @@ namespace TimeNetSync.ViewModel
             }
         }
 
-        public PropertyObservableCollection<Competitor> Competitors
+        public BindingList<Competitor> Competitors
         {
             get { return competitors; }
             set { competitors = value; }
