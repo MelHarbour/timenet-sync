@@ -165,9 +165,16 @@ namespace TimeNetSync
 
             valueRange.Values = objlist.ToList<IList<object>>();
 
-            SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, ViewModel.SpreadsheetId, ViewModel.RangeTarget);
-            update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
-            UpdateValuesResponse result2 = update.Execute();
+            try
+            {
+                SpreadsheetsResource.ValuesResource.UpdateRequest update = service.Spreadsheets.Values.Update(valueRange, ViewModel.SpreadsheetId, ViewModel.RangeTarget);
+                update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
+                UpdateValuesResponse result2 = update.Execute();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
     }
 }
