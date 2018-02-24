@@ -75,7 +75,7 @@ namespace TimeNetSync.Model
         {
             get
             {
-                return Results.FirstOrDefault(x => x.Section == 1);
+                return Results.FirstOrDefault(x => x.Section == 3); // This is hard coded for WEHoRR
             }
         }
 
@@ -88,6 +88,16 @@ namespace TimeNetSync.Model
                 else
                     return new TimeSpan(0, 0, 0);
             }
+        }
+
+        public TimeSpan RunTimeToSection(int sectionNumber)
+        {
+            MultisportResult endResult = Results.FirstOrDefault(x => x.Section == sectionNumber);
+
+            if (StartTime != null && endResult != null)
+                return endResult.TimeOfDay - StartTime.TimeOfDay;
+            else
+                return new TimeSpan(0, 0, 0);
         }
 
         public ResultState State

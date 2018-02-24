@@ -55,7 +55,10 @@ namespace TimeNetSync
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (ViewModel.IsConnecting)
+            {
                 FillViewModel();
+                SendToGoogle();
+            }
         }
 
         private void FillViewModel()
@@ -155,12 +158,12 @@ namespace TimeNetSync
         }
         #endregion
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void SendToGoogle()
         {
             ValueRange valueRange = new ValueRange();
             var objlist = from c in ViewModel.Competitors
                           orderby c.Bib
-                          select new List<object>() { c.Bib, c.LastName, c.RunTime };
+                          select new List<object>() { c.Bib, c.LastName, c.StartTime?.TimeOfDay, c.RunTimeToSection(1), c.RunTimeToSection(2), c.RunTime };
 
             valueRange.Values = objlist.ToList<IList<object>>();
 
