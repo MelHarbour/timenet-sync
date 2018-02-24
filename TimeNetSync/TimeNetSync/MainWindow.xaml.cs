@@ -159,7 +159,6 @@ namespace TimeNetSync
         {
             ValueRange valueRange = new ValueRange();
             var objlist = from c in ViewModel.Competitors
-                          where c.Confirmed
                           orderby c.Bib
                           select new List<object>() { c.Bib, c.LastName, c.RunTime };
 

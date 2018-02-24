@@ -33,7 +33,6 @@ namespace TimeNetSync.Model
         public string Info4 { get; set; }
         public string Info5 { get; set; }
         public string InfoResult { get; set; }
-        public bool Confirmed { get; set; }
 
         public Competitor()
         {
