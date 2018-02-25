@@ -100,6 +100,11 @@ namespace TimeNetSync.Model
                 return new TimeSpan(0, 0, 0);
         }
 
+        public MultisportResult SectionTime(int sectionNumber)
+        {
+            return Results.FirstOrDefault(x => x.Section == sectionNumber);
+        }
+
         public ResultState State
         {
             get
