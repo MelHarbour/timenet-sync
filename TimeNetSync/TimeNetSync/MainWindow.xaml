@@ -29,6 +29,8 @@
             <TextBox x:Name="spreadsheetIdTextBox" Height="50" TextWrapping="Wrap" Text="{Binding SpreadsheetId}" IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource InverseBooleanConverter}}"/>
             <Label x:Name="rangeTargetLabel" Content="Range Target" Margin="0,10,0,0" />
             <TextBox x:Name="rangeTargetTextBox" Height="23" TextWrapping="Wrap" Text="{Binding RangeTarget}" IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource InverseBooleanConverter}}"/>
+            <Label x:Name="connStringLabel" Content="Connection String" Margin="0,10,0,0" />
+            <TextBox x:Name="connStringTextBox" Height="23" TextWrapping="Wrap" Text="{Binding ConnectionString}" IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource InverseBooleanConverter}}"/>
             <Button x:Name="connectingBtn" Content="Toggle Connecting" Height="55" Margin="0,10,0,0" Command="{Binding ToggleConnectingCommand}"/>
             <Button x:Name="saveConfigBtn" Content="Save Config" Height="55" Margin="0,10,0,0" Command="{Binding SaveSettingsCommand}"/>
         </StackPanel>

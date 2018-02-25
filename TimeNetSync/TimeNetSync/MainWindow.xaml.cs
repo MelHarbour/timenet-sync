@@ -24,6 +24,7 @@ using TimeNetSync.ViewModel;
 using System.Data.SqlServerCe;
 using TimeNetSync.Model;
 using System.Windows.Threading;
+using System.Data.SqlClient;
 
 namespace TimeNetSync
 {
@@ -58,6 +59,7 @@ namespace TimeNetSync
             {
                 FillViewModel();
                 SendToGoogle();
+                SendToWebsite();
             }
         }
 
@@ -66,7 +68,7 @@ namespace TimeNetSync
             using (SqlCeConnection connection = new SqlCeConnection(String.Concat(@"Data Source=""", ViewModel.FilePath, @"""")))
             {
                 connection.Open();
-                SqlCeCommand command = new SqlCeCommand("SELECT Id, Bib, LastName FROM Competitors", connection);
+                SqlCeCommand command = new SqlCeCommand("SELECT Id, Bib, LastName, Code FROM Competitors", connection);
                 SqlCeCommand resultsCommand = new SqlCeCommand("SELECT Id, Section, TimeOfDay, State FROM MultisportResults WHERE Bib = @Bib", connection);
 
                 SqlCeDataReader reader = command.ExecuteReader();
@@ -83,6 +85,7 @@ namespace TimeNetSync
 
                     competitor.Bib = (int)reader[1];
                     competitor.LastName = (string)reader[2];
+                    competitor.Code = (string)reader[3];
 
                     resultsCommand.Parameters.Clear();
                     resultsCommand.Parameters.Add(new SqlCeParameter("Bib", competitor.Bib));
@@ -176,6 +179,65 @@ namespace TimeNetSync
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void SendToWebsite()
+        {
+            if (!String.IsNullOrEmpty(ViewModel.ConnectionString))
+            {
+                using (SqlConnection conn = new SqlConnection())
+                {
+                    conn.ConnectionString = ViewModel.ConnectionString;
+                    conn.Open();
+
+                    SqlCommand selectCommand = new SqlCommand("SELECT CrewId FROM dbo.Crews WHERE BroeCrewId = @BroeId", conn);
+
+                    SqlCommand command = new SqlCommand(@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+                    BEGIN TRANSACTION;
+                    UPDATE dbo.Results SET TimeOfDay = @TimeOfDay WHERE CrewId = @CrewId;
+                    IF @@ROWCOUNT = 0
+                    BEGIN
+                        INSERT dbo.Results(CrewId,TimeOfDay,TimingPointId) SELECT @CrewId,@TimeOfDay,@TimingPointId;
+                    END
+                    COMMIT TRANSACTION; ", conn);
+
+                    foreach (Competitor competitor in ViewModel.Competitors)
+                    {
+                        if (competitor.Code == null || competitor.StartTime == null)
+                            continue;
+
+                        SqlParameter timeOfDay = new SqlParameter("@TimeOfDay", System.Data.SqlDbType.Time);
+                        SqlParameter timingPointId = new SqlParameter("@TimingPointId", System.Data.SqlDbType.Int);
+                        command.Parameters.Add(timeOfDay);
+                        command.Parameters.Add(timingPointId);
+
+                        // Get the CrewId
+                        selectCommand.Parameters.AddWithValue("@BroeId", Int32.Parse(competitor.Code));
+                        int crewId = (int)selectCommand.ExecuteScalar();
+                        command.Parameters.AddWithValue("@CrewId", crewId);
+
+                        // Sync start times (point Id 1)
+                        timeOfDay.Value = competitor.StartTime.TimeOfDay;
+                        timingPointId.Value = 1;
+                        command.ExecuteNonQuery();
+
+                        // Sync Barnes times (point Id 2)
+                        timeOfDay.Value = competitor.RunTimeToSection(1);
+                        timingPointId.Value = 2;
+                        command.ExecuteNonQuery();
+
+                        // Sync Hammersmith times (point Id 3)
+                        timeOfDay.Value = competitor.RunTimeToSection(2);
+                        timingPointId.Value = 2;
+                        command.ExecuteNonQuery();
+
+                        // Sync finish times (point Id 4)
+                        timeOfDay.Value = competitor.RunTime;
+                        timingPointId.Value = 2;
+                        command.ExecuteNonQuery();
+                    }
+                }
             }
         }
     }

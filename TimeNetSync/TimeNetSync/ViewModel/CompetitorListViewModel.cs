@@ -14,6 +14,7 @@ namespace TimeNetSync.ViewModel
     public class CompetitorListViewModel : INotifyPropertyChanged
     {
         private string filePath;
+        private string connectionString;
         private string spreadsheetId;
         private string rangeTarget;
         private bool isConnecting = true;
@@ -25,6 +26,12 @@ namespace TimeNetSync.ViewModel
         {
             get { return filePath; }
             set { SetField(ref filePath, value); }
+        }
+
+        public string ConnectionString
+        {
+            get { return connectionString; }
+            set { SetField(ref connectionString, value); }
         }
 
         public string SpreadsheetId
