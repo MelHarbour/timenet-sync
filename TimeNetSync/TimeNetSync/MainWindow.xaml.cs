@@ -186,16 +186,17 @@ namespace TimeNetSync
         {
             if (!String.IsNullOrEmpty(ViewModel.ConnectionString))
             {
-                using (SqlConnection conn = new SqlConnection())
-                {
-                    conn.ConnectionString = ViewModel.ConnectionString;
-                    conn.Open();
+                try {
+                    using (SqlConnection conn = new SqlConnection())
+                    {
+                        conn.ConnectionString = ViewModel.ConnectionString;
+                        conn.Open();
 
-                    SqlCommand selectCommand = new SqlCommand("SELECT CrewId FROM dbo.Crews WHERE BroeCrewId = @BroeId", conn);
-                    SqlParameter broeParameter = new SqlParameter("@BroeId", System.Data.SqlDbType.Int);
-                    selectCommand.Parameters.Add(broeParameter);
+                        SqlCommand selectCommand = new SqlCommand("SELECT CrewId FROM dbo.Crews WHERE BroeCrewId = @BroeId", conn);
+                        SqlParameter broeParameter = new SqlParameter("@BroeId", System.Data.SqlDbType.Int);
+                        selectCommand.Parameters.Add(broeParameter);
 
-                    SqlCommand command = new SqlCommand(@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+                        SqlCommand command = new SqlCommand(@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
                     BEGIN TRANSACTION;
                     UPDATE dbo.Results SET TimeOfDay = @TimeOfDay WHERE CrewId = @CrewId AND TimingPointId = @TimingPointId;
                     IF @@ROWCOUNT = 0
@@ -204,54 +205,60 @@ namespace TimeNetSync
                     END
                     COMMIT TRANSACTION; ", conn);
 
-                    SqlParameter timeOfDay = new SqlParameter("@TimeOfDay", System.Data.SqlDbType.Time);
-                    SqlParameter timingPointId = new SqlParameter("@TimingPointId", System.Data.SqlDbType.Int);
-                    SqlParameter crewId = new SqlParameter("@CrewId", System.Data.SqlDbType.Int);
-                    command.Parameters.Add(timeOfDay);
-                    command.Parameters.Add(timingPointId);
-                    command.Parameters.Add(crewId);
+                        SqlParameter timeOfDay = new SqlParameter("@TimeOfDay", System.Data.SqlDbType.Time);
+                        SqlParameter timingPointId = new SqlParameter("@TimingPointId", System.Data.SqlDbType.Int);
+                        SqlParameter crewId = new SqlParameter("@CrewId", System.Data.SqlDbType.Int);
+                        command.Parameters.Add(timeOfDay);
+                        command.Parameters.Add(timingPointId);
+                        command.Parameters.Add(crewId);
 
-                    foreach (Competitor competitor in ViewModel.Competitors)
-                    {
-                        if (competitor.Code == null || competitor.StartTime == null)
-                            continue;
-
-                        // Get the CrewId
-                        broeParameter.Value = Int32.Parse(competitor.Code);
-                        crewId.Value = (int)selectCommand.ExecuteScalar();
-
-                        // Sync start times (point Id 1)
-                        timeOfDay.Value = competitor.StartTime.TimeOfDay;
-                        timingPointId.Value = 1;
-                        command.ExecuteNonQuery();
-
-                        // Sync Barnes times (point Id 2)
-                        MultisportResult sectionResult = competitor.SectionTime(1);
-                        if (sectionResult != null)
+                        foreach (Competitor competitor in ViewModel.Competitors)
                         {
-                            timeOfDay.Value = sectionResult.TimeOfDay;
-                            timingPointId.Value = 2;
-                            command.ExecuteNonQuery();
-                        }
+                            if (competitor.Code == null || competitor.StartTime == null)
+                                continue;
 
-                        // Sync Hammersmith times (point Id 3)
-                        sectionResult = competitor.SectionTime(2);
-                        if (sectionResult != null)
-                        {
-                            timeOfDay.Value = sectionResult.TimeOfDay;
-                            timingPointId.Value = 3;
-                            command.ExecuteNonQuery();
-                        }
+                            // Get the CrewId
+                            broeParameter.Value = Int32.Parse(competitor.Code);
+                            crewId.Value = (int)selectCommand.ExecuteScalar();
 
-                        // Sync finish times (point Id 4)
-                        sectionResult = competitor.FinishTime;
-                        if (sectionResult != null)
-                        {
-                            timeOfDay.Value = sectionResult.TimeOfDay;
-                            timingPointId.Value = 4;
+                            // Sync start times (point Id 1)
+                            timeOfDay.Value = competitor.StartTime.TimeOfDay;
+                            timingPointId.Value = 1;
                             command.ExecuteNonQuery();
+
+                            // Sync Barnes times (point Id 2)
+                            MultisportResult sectionResult = competitor.SectionTime(1);
+                            if (sectionResult != null)
+                            {
+                                timeOfDay.Value = sectionResult.TimeOfDay;
+                                timingPointId.Value = 2;
+                                command.ExecuteNonQuery();
+                            }
+
+                            // Sync Hammersmith times (point Id 3)
+                            sectionResult = competitor.SectionTime(2);
+                            if (sectionResult != null)
+                            {
+                                timeOfDay.Value = sectionResult.TimeOfDay;
+                                timingPointId.Value = 3;
+                                command.ExecuteNonQuery();
+                            }
+
+                            // Sync finish times (point Id 4)
+                            sectionResult = competitor.FinishTime;
+                            if (sectionResult != null)
+                            {
+                                timeOfDay.Value = sectionResult.TimeOfDay;
+                                timingPointId.Value = 4;
+                                command.ExecuteNonQuery();
+                            }
                         }
                     }
+                }
+                catch (SqlException ex)
+                {
+                    ViewModel.IsConnecting = false;
+                    MessageBox.Show(ex.Message);
                 }
             }
         }
