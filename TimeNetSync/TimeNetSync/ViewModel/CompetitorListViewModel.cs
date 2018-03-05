@@ -75,7 +75,6 @@ namespace TimeNetSync.ViewModel
         public BindingList<Competitor> Competitors
         {
             get { return competitors; }
-            set { competitors = value; }
         }
 
         public CompetitorListViewModel()

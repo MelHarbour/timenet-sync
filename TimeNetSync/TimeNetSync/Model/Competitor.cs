@@ -39,7 +39,11 @@ namespace TimeNetSync.Model
             Results.ListChanged += HandleResultsChange;
         }
 
-        public BindingList<MultisportResult> Results = new BindingList<MultisportResult>();
+        private BindingList<MultisportResult> results = new BindingList<MultisportResult>();
+        public BindingList<MultisportResult> Results
+        {
+            get { return results; }
+        }
 
         private void HandleResultsChange(object sender, ListChangedEventArgs e)
         {
@@ -79,6 +83,7 @@ namespace TimeNetSync.Model
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "RunTime")]
         public TimeSpan RunTime
         {
             get
@@ -90,6 +95,7 @@ namespace TimeNetSync.Model
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "RunTime")]
         public TimeSpan RunTimeToSection(int sectionNumber)
         {
             MultisportResult endResult = Results.FirstOrDefault(x => x.Section == sectionNumber);

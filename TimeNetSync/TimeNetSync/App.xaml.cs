@@ -21,11 +21,13 @@ namespace TimeNetSync
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            IUnityContainer container = new UnityContainer();
-            container.RegisterType<IResultsOutput, GoogleSheetResultsOutput>();
-            var wnd = container.Resolve<MainWindow>();
-            // Show the window
-            wnd.Show();
+            using (IUnityContainer container = new UnityContainer())
+            {
+                container.RegisterType<IResultsOutput, GoogleSheetResultsOutput>();
+                var wnd = container.Resolve<MainWindow>();
+                // Show the window
+                wnd.Show();
+            }
         }
     }
 }

@@ -25,6 +25,7 @@ using System.Data.SqlServerCe;
 using TimeNetSync.Model;
 using System.Windows.Threading;
 using System.Data.SqlClient;
+using System.Globalization;
 
 namespace TimeNetSync
 {
@@ -66,44 +67,46 @@ namespace TimeNetSync
         private void FillViewModel()
         {
             using (SqlCeConnection connection = new SqlCeConnection(String.Concat(@"Data Source=""", ViewModel.FilePath, @"""")))
+            using (SqlCeCommand command = new SqlCeCommand("SELECT Id, Bib, LastName, Code FROM Competitors", connection))
+            using (SqlCeCommand resultsCommand = new SqlCeCommand("SELECT Id, Section, TimeOfDay, State FROM MultisportResults WHERE Bib = @Bib", connection))
             {
                 connection.Open();
-                SqlCeCommand command = new SqlCeCommand("SELECT Id, Bib, LastName, Code FROM Competitors", connection);
-                SqlCeCommand resultsCommand = new SqlCeCommand("SELECT Id, Section, TimeOfDay, State FROM MultisportResults WHERE Bib = @Bib", connection);
 
-                SqlCeDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                using (SqlCeDataReader reader = command.ExecuteReader())
                 {
-                    int id = (int)reader[0];
-                    Competitor competitor = ViewModel.Competitors.FirstOrDefault(x => x.Id == id);
-                    if (competitor == null)
+                    while (reader.Read())
                     {
-                        competitor = new Competitor();
-                        competitor.Id = (int)reader[0];
-                        ViewModel.Competitors.Add(competitor);
-                    }
-
-                    competitor.Bib = (int)reader[1];
-                    competitor.LastName = (string)reader[2];
-                    competitor.Code = (string)reader[3];
-
-                    resultsCommand.Parameters.Clear();
-                    resultsCommand.Parameters.Add(new SqlCeParameter("Bib", competitor.Bib));
-                    SqlCeDataReader resultsReader = resultsCommand.ExecuteReader();
-                    while (resultsReader.Read())
-                    {
-                        int resultsId = (int)resultsReader[0];
-                        MultisportResult result = competitor.Results.FirstOrDefault(x => x.Id == resultsId);
-                        if (result == null)
+                        int id = (int)reader[0];
+                        Competitor competitor = ViewModel.Competitors.FirstOrDefault(x => x.Id == id);
+                        if (competitor == null)
                         {
-                            result = new MultisportResult();
-                            result.Id = resultsId;
-                            competitor.Results.Add(result);
+                            competitor = new Competitor();
+                            competitor.Id = (int)reader[0];
+                            ViewModel.Competitors.Add(competitor);
                         }
-                        result.Bib = competitor.Bib;
-                        result.Section = (int)resultsReader[1];
-                        result.TimeOfDay = TimeSpan.FromMilliseconds((int)resultsReader[2] / 10);
-                        result.State = (ResultState)(int)resultsReader[3];
+
+                        competitor.Bib = (int)reader[1];
+                        competitor.LastName = (string)reader[2];
+                        competitor.Code = (string)reader[3];
+
+                        resultsCommand.Parameters.Clear();
+                        resultsCommand.Parameters.Add(new SqlCeParameter("Bib", competitor.Bib));
+                        SqlCeDataReader resultsReader = resultsCommand.ExecuteReader();
+                        while (resultsReader.Read())
+                        {
+                            int resultsId = (int)resultsReader[0];
+                            MultisportResult result = competitor.Results.FirstOrDefault(x => x.Id == resultsId);
+                            if (result == null)
+                            {
+                                result = new MultisportResult();
+                                result.Id = resultsId;
+                                competitor.Results.Add(result);
+                            }
+                            result.Bib = competitor.Bib;
+                            result.Section = (int)resultsReader[1];
+                            result.TimeOfDay = TimeSpan.FromMilliseconds((int)resultsReader[2] / 10);
+                            result.State = (ResultState)(int)resultsReader[3];
+                        }
                     }
                 }
             }
@@ -126,7 +129,7 @@ namespace TimeNetSync
                     "user",
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
-                Console.WriteLine("Credential file saved to: " + credPath);
+                Console.WriteLine(Properties.Resources.credentialsSaved + credPath);
             }
 
             // Create Google Sheets API service.
@@ -158,6 +161,7 @@ namespace TimeNetSync
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
 
@@ -187,23 +191,21 @@ namespace TimeNetSync
             if (!String.IsNullOrEmpty(ViewModel.ConnectionString))
             {
                 try {
-                    using (SqlConnection conn = new SqlConnection())
-                    {
-                        conn.ConnectionString = ViewModel.ConnectionString;
-                        conn.Open();
-
-                        SqlCommand selectCommand = new SqlCommand("SELECT CrewId FROM dbo.Crews WHERE BroeCrewId = @BroeId", conn);
-                        SqlParameter broeParameter = new SqlParameter("@BroeId", System.Data.SqlDbType.Int);
-                        selectCommand.Parameters.Add(broeParameter);
-
-                        SqlCommand command = new SqlCommand(@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+                    using (SqlConnection conn = new SqlConnection(ViewModel.ConnectionString))
+                    using (SqlCommand selectCommand = new SqlCommand("SELECT CrewId FROM dbo.Crews WHERE BroeCrewId = @BroeId", conn))
+                    using (SqlCommand command = new SqlCommand(@"SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
                     BEGIN TRANSACTION;
                     UPDATE dbo.Results SET TimeOfDay = @TimeOfDay WHERE CrewId = @CrewId AND TimingPointId = @TimingPointId;
                     IF @@ROWCOUNT = 0
                     BEGIN
                         INSERT dbo.Results(CrewId,TimeOfDay,TimingPointId) SELECT @CrewId,@TimeOfDay,@TimingPointId;
                     END
-                    COMMIT TRANSACTION; ", conn);
+                    COMMIT TRANSACTION; ", conn))
+                    {
+                        conn.Open();
+
+                        SqlParameter broeParameter = new SqlParameter("@BroeId", System.Data.SqlDbType.Int);
+                        selectCommand.Parameters.Add(broeParameter);
 
                         SqlParameter timeOfDay = new SqlParameter("@TimeOfDay", System.Data.SqlDbType.Time);
                         SqlParameter timingPointId = new SqlParameter("@TimingPointId", System.Data.SqlDbType.Int);
@@ -218,7 +220,7 @@ namespace TimeNetSync
                                 continue;
 
                             // Get the CrewId
-                            broeParameter.Value = Int32.Parse(competitor.Code);
+                            broeParameter.Value = Int32.Parse(competitor.Code, CultureInfo.InvariantCulture);
                             crewId.Value = (int)selectCommand.ExecuteScalar();
 
                             // Sync start times (point Id 1)
