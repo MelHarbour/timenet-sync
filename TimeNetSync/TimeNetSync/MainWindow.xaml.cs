@@ -170,7 +170,8 @@ namespace TimeNetSync
             ValueRange valueRange = new ValueRange();
             var objlist = from c in ViewModel.Competitors
                           orderby c.Bib
-                          select new List<object>() { c.Bib, c.LastName, c.StartTime?.TimeOfDay, c.RunTimeToSection(1), c.RunTimeToSection(2), c.RunTime };
+                          select new List<object>() { c.Bib, c.LastName, c.StartTime?.TimeOfDay.TotalDays,
+                              c.RunTimeToSection(1).TotalDays, c.RunTimeToSection(2).TotalDays, c.RunTime.TotalDays };
 
             valueRange.Values = objlist.ToList<IList<object>>();
 
