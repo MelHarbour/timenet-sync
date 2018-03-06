@@ -94,6 +94,7 @@ namespace TimeNetSync.ViewModel
             Properties.Settings.Default.TimeNetFileLocation = FilePath;
             Properties.Settings.Default.SpreadsheetId = SpreadsheetId;
             Properties.Settings.Default.RangeTarget = RangeTarget;
+            Properties.Settings.Default.ConnectionString = ConnectionString;
             Properties.Settings.Default.Save();
         }
 

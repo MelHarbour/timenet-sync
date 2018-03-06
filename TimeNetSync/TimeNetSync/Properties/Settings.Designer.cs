@@ -12,7 +12,7 @@ namespace TimeNetSync.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -37,18 +37,6 @@ namespace TimeNetSync.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Public\\Documents\\Time.Net 2\\Competitions\\Test.timeNetCompetition")]
-        public string TimeNetFileLocation {
-            get {
-                return ((string)(this["TimeNetFileLocation"]));
-            }
-            set {
-                this["TimeNetFileLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Sheet1!A1")]
         public string RangeTarget {
             get {
@@ -62,12 +50,24 @@ namespace TimeNetSync.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Setting {
+        public string ConnectionString {
             get {
-                return ((string)(this["Setting"]));
+                return ((string)(this["ConnectionString"]));
             }
             set {
-                this["Setting"] = value;
+                this["ConnectionString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Public\\Documents\\Time.NET 2\\Competitions\\WEHoRR 2018.timeNetCompetition")]
+        public string TimeNetFileLocation {
+            get {
+                return ((string)(this["TimeNetFileLocation"]));
+            }
+            set {
+                this["TimeNetFileLocation"] = value;
             }
         }
     }

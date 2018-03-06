@@ -5,14 +5,14 @@
     <Setting Name="SpreadsheetId" Type="System.String" Scope="User">
       <Value Profile="(Default)">1KWuuzRokyxaPFIqQckYR3OVsyaFvISNk_PKu6PwCZQ4</Value>
     </Setting>
-    <Setting Name="TimeNetFileLocation" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Users\Public\Documents\Time.Net 2\Competitions\Test.timeNetCompetition</Value>
-    </Setting>
     <Setting Name="RangeTarget" Type="System.String" Scope="User">
       <Value Profile="(Default)">Sheet1!A1</Value>
     </Setting>
-    <Setting Name="Setting" Type="System.String" Scope="User">
+    <Setting Name="ConnectionString" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TimeNetFileLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Users\Public\Documents\Time.NET 2\Competitions\WEHoRR 2018.timeNetCompetition</Value>
     </Setting>
   </Settings>
 </SettingsFile>
