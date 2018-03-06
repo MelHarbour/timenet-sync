@@ -202,6 +202,7 @@ namespace TimeNetSync
                         INSERT dbo.Results(CrewId,TimeOfDay,TimingPointId) SELECT @CrewId,@TimeOfDay,@TimingPointId;
                     END
                     COMMIT TRANSACTION; ", conn))
+                    using (SqlCommand statusCommand = new SqlCommand("UPDATE dbo.Crews SET Status = @ResultStatus WHERE CrewId = @CrewId", conn))
                     {
                         conn.Open();
 
@@ -211,13 +212,16 @@ namespace TimeNetSync
                         SqlParameter timeOfDay = new SqlParameter("@TimeOfDay", System.Data.SqlDbType.Time);
                         SqlParameter timingPointId = new SqlParameter("@TimingPointId", System.Data.SqlDbType.Int);
                         SqlParameter crewId = new SqlParameter("@CrewId", System.Data.SqlDbType.Int);
+                        SqlParameter resultStatus = new SqlParameter("@ResultStatus", System.Data.SqlDbType.Int);
                         command.Parameters.Add(timeOfDay);
                         command.Parameters.Add(timingPointId);
                         command.Parameters.Add(crewId);
+                        statusCommand.Parameters.Add(crewId);
+                        statusCommand.Parameters.Add(resultStatus);
 
                         foreach (Competitor competitor in ViewModel.Competitors)
                         {
-                            if (competitor.Code == null || competitor.StartTime == null)
+                            if (competitor.Code == null || (competitor.StartTime == null && competitor.State == ResultState.Ok))
                                 continue;
 
                             // Get the CrewId
@@ -225,9 +229,12 @@ namespace TimeNetSync
                             crewId.Value = (int)selectCommand.ExecuteScalar();
 
                             // Sync start times (point Id 1)
-                            timeOfDay.Value = competitor.StartTime.TimeOfDay;
-                            timingPointId.Value = 1;
-                            command.ExecuteNonQuery();
+                            if (competitor.StartTime != null)
+                            {
+                                timeOfDay.Value = competitor.StartTime.TimeOfDay;
+                                timingPointId.Value = 1;
+                                command.ExecuteNonQuery();
+                            }
 
                             // Sync Barnes times (point Id 2)
                             MultisportResult sectionResult = competitor.SectionTime(1);
@@ -255,6 +262,9 @@ namespace TimeNetSync
                                 timingPointId.Value = 4;
                                 command.ExecuteNonQuery();
                             }
+
+                            resultStatus.Value = (int)competitor.State;
+                            statusCommand.ExecuteNonQuery();
                         }
                     }
                 }

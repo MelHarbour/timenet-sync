@@ -115,7 +115,7 @@ namespace TimeNetSync.Model
         {
             get
             {
-                MultisportResult result = Results.FirstOrDefault(x => x.Section == 1);
+                MultisportResult result = Results.FirstOrDefault(x => x.Section == 3);
                 if (result != null)
                     return result.State;
                 else
