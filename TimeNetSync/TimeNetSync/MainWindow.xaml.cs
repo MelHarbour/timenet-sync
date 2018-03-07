@@ -26,6 +26,7 @@ using TimeNetSync.Model;
 using System.Windows.Threading;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Data;
 
 namespace TimeNetSync
 {
@@ -206,17 +207,18 @@ namespace TimeNetSync
                     {
                         conn.Open();
 
-                        SqlParameter broeParameter = new SqlParameter("@BroeId", System.Data.SqlDbType.Int);
+                        SqlParameter broeParameter = new SqlParameter("@BroeId", SqlDbType.Int);
                         selectCommand.Parameters.Add(broeParameter);
 
-                        SqlParameter timeOfDay = new SqlParameter("@TimeOfDay", System.Data.SqlDbType.Time);
-                        SqlParameter timingPointId = new SqlParameter("@TimingPointId", System.Data.SqlDbType.Int);
-                        SqlParameter crewId = new SqlParameter("@CrewId", System.Data.SqlDbType.Int);
-                        SqlParameter resultStatus = new SqlParameter("@ResultStatus", System.Data.SqlDbType.Int);
+                        SqlParameter timeOfDay = new SqlParameter("@TimeOfDay", SqlDbType.Time);
+                        SqlParameter timingPointId = new SqlParameter("@TimingPointId", SqlDbType.Int);
+                        SqlParameter crewId = new SqlParameter("@CrewId", SqlDbType.Int);
+                        SqlParameter statusCrewId = new SqlParameter("@CrewId", SqlDbType.Int);
+                        SqlParameter resultStatus = new SqlParameter("@ResultStatus", SqlDbType.Int);
                         command.Parameters.Add(timeOfDay);
                         command.Parameters.Add(timingPointId);
                         command.Parameters.Add(crewId);
-                        statusCommand.Parameters.Add(crewId);
+                        statusCommand.Parameters.Add(statusCrewId);
                         statusCommand.Parameters.Add(resultStatus);
 
                         foreach (Competitor competitor in ViewModel.Competitors)
@@ -227,6 +229,7 @@ namespace TimeNetSync
                             // Get the CrewId
                             broeParameter.Value = Int32.Parse(competitor.Code, CultureInfo.InvariantCulture);
                             crewId.Value = (int)selectCommand.ExecuteScalar();
+                            statusCrewId.Value = crewId.Value;
 
                             // Sync start times (point Id 1)
                             if (competitor.StartTime != null)
@@ -256,7 +259,7 @@ namespace TimeNetSync
 
                             // Sync finish times (point Id 4)
                             sectionResult = competitor.FinishTime;
-                            if (sectionResult != null)
+                            if (sectionResult != null && sectionResult.TimeOfDay > new TimeSpan(0,0,0))
                             {
                                 timeOfDay.Value = sectionResult.TimeOfDay;
                                 timingPointId.Value = 4;
