@@ -48,7 +48,7 @@ namespace TimeNetSync
 
             this.app = Application.Current as App;
 
-            InitializeDrive();
+            //InitializeDrive();
             DataContext = ViewModel;
             timer.Tick += new EventHandler(Timer_Tick);
             timer.Interval = new TimeSpan(0, 0, 5);
@@ -60,7 +60,7 @@ namespace TimeNetSync
             if (ViewModel.IsConnecting)
             {
                 FillViewModel();
-                SendToGoogle();
+                //SendToGoogle();
                 SendToWebsite();
             }
         }
