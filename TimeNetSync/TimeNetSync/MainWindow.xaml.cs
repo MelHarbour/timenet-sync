@@ -19,7 +19,6 @@ using System.Threading;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4.Data;
-using Microsoft.Practices.Unity;
 using TimeNetSync.ViewModel;
 using System.Data.SqlServerCe;
 using TimeNetSync.Model;
