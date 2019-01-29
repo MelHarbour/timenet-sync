@@ -11,10 +11,12 @@ namespace TimeNetSync.Services
     {
         public string OpenFileDialog()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.DefaultExt = ".timeNetCompetition";
-            openFileDialog.Filter = "Time.NET Files (*.timeNetCompetition)|*.timeNetCompetition";
-            openFileDialog.InitialDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Time.NET 2\\Competitions");
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                DefaultExt = ".timeNetCompetition",
+                Filter = "Time.NET Files (*.timeNetCompetition)|*.timeNetCompetition",
+                InitialDirectory = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), "Time.NET 2\\Competitions")
+            };
 
             if (openFileDialog.ShowDialog() == true)
                 return openFileDialog.FileName;
