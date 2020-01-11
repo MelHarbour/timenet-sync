@@ -12,7 +12,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="TimeNetFileLocation" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Users\Public\Documents\Time.NET 2\Competitions\WEHoRR 2018.timeNetCompetition</Value>
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>
