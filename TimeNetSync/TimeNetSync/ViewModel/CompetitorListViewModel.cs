@@ -17,7 +17,7 @@ namespace TimeNetSync.ViewModel
         private string connectionString;
         private string spreadsheetId;
         private string rangeTarget;
-        private bool isConnecting = true;
+        private bool isConnecting = false;
         private RelayCommand toggleConnectingCommand;
         private RelayCommand saveSettingsCommand;
         private BindingList<Competitor> competitors = new BindingList<Competitor>();
